@@ -56,7 +56,7 @@ function Home() {
               marginBottom: '20px',
               lineHeight: '1.2'
             }}>
-              For Every Student,<br />
+              For Every Student upgrade ,<br />
               <span style={{ color: '#ff6b3d' }}>Every Classroom.</span>
             </h1>
             <p style={{
