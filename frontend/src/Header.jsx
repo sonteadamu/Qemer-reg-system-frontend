@@ -42,7 +42,7 @@ function Header() {
         }}>
           {[
             { name: 'Home', path: '/' },
-            { name: 'Instructor', path: '/instructor' },
+            { name: 'About Us', path: '/about' },
             { name: 'Courses', path: '/courses' },
             { name: 'Blog', path: '/blog' }
           ].map((item, index) => (
