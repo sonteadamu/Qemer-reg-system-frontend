@@ -25,6 +25,7 @@ function Courses() {
 
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [courseIdToTime, setCourseIdToTime] = useState({});
+  const [courseIdToFormat, setCourseIdToFormat] = useState({});
   const [studentName, setStudentName] = useState('');
   const [studentEmail, setStudentEmail] = useState('');
 
@@ -47,16 +48,19 @@ function Courses() {
 
   const isAllTimesChosen =
     selectedCourses.length > 0 &&
-    selectedCourses.every((c) => Boolean(courseIdToTime[c.id]));
+    selectedCourses.every((c) => Boolean(courseIdToTime[c.id]) && Boolean(courseIdToFormat[c.id]));
 
   function toggleCourseSelection(course) {
     const alreadySelected = selectedCourses.some((c) => c.id === course.id);
     if (alreadySelected) {
       const remaining = selectedCourses.filter((c) => c.id !== course.id);
-      const newMap = { ...courseIdToTime };
-      delete newMap[course.id];
+      const newTimeMap = { ...courseIdToTime };
+      const newFormatMap = { ...courseIdToFormat };
+      delete newTimeMap[course.id];
+      delete newFormatMap[course.id];
       setSelectedCourses(remaining);
-      setCourseIdToTime(newMap);
+      setCourseIdToTime(newTimeMap);
+      setCourseIdToFormat(newFormatMap);
       return;
     }
     setSelectedCourses([...selectedCourses, course]);
@@ -74,15 +78,19 @@ function Courses() {
     setCourseIdToTime({ ...courseIdToTime, [courseId]: interval });
   }
 
+  function selectFormatForCourse(courseId, format) {
+    setCourseIdToFormat({ ...courseIdToFormat, [courseId]: format });
+  }
+
   function handleSubmitRegistration(event) {
     event.preventDefault();
     if (!isAllTimesChosen || !studentName || !studentEmail) {
-      alert('Please fill in your details and assign a time slot for each selected course.');
+      alert('Please fill in your details and assign a time slot and format for each selected course.');
       return;
     }
 
     const summary = selectedCourses
-      .map((c) => `Course: ${c.name}\nDuration: ${c.duration}\nTime: ${courseIdToTime[c.id]}`)
+      .map((c) => `Course: ${c.name}\nDuration: ${c.duration}\nTime: ${courseIdToTime[c.id]}\nFormat: ${courseIdToFormat[c.id]}`)
       .join('\n\n');
 
     alert(`Registered Successfully!\n\nName: ${studentName}\nEmail: ${studentEmail}\n\n${summary}`);
@@ -90,6 +98,7 @@ function Courses() {
     // Reset
     setSelectedCourses([]);
     setCourseIdToTime({});
+    setCourseIdToFormat({});
     setStudentName('');
     setStudentEmail('');
   }
@@ -245,6 +254,47 @@ function Courses() {
                       );
                     })}
                   </div>
+
+                  {/* Format Selection */}
+                  {courseIdToTime[course.id] && (
+                    <div style={{ marginTop: '12px' }}>
+                      <div style={{ fontWeight: 500, marginBottom: '8px', fontSize: '14px', color: '#444' }}>
+                        Choose Format
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        {['In-person', 'Online'].map((format) => {
+                          const checked = courseIdToFormat[course.id] === format;
+                          return (
+                            <label
+                              key={format}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '8px 12px',
+                                borderRadius: '8px',
+                                background: checked ? '#2A7D66' : '#fff',
+                                color: checked ? '#fff' : '#333',
+                                border: checked ? '2px solid #2A7D66' : '2px solid #e0e0e0',
+                                cursor: 'pointer',
+                                flex: 1,
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <input
+                                type="radio"
+                                name={`format-${course.id}`}
+                                value={format}
+                                checked={checked}
+                                onChange={() => selectFormatForCourse(course.id, format)}
+                                style={{ marginRight: '8px' }}
+                              />
+                              {format}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
